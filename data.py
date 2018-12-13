@@ -49,18 +49,22 @@ def filter_state(year, state, census=None):
 
     key = 'POPEST{}_CIV'.format(year)
 
-    data = list(filter(lambda x: str(x['STATE']) == str(state) and
-                       int(x['AGE']) != 999, census))
+#     for row in d
 
-    age = {}
+    data = list(filter(lambda x: str(x['STATE']) == str(state) and
+                       int(x['AGE']) != 999 and
+                       x['SEX'] != '0', census))
+
+    res = []
 
     for row in data:
+        res.append({
+            'Age': int(row['AGE']),
+            'Population': int(row[key]),
+            'Gender': 'Male' if int(row['SEX']) == 1 else 'Female'
+        })
 
-        if row['AGE'] not in age:
-            age[row['AGE']] = {'Age': int(row['AGE']), 'Population': 0}
-        age[row['AGE']]['Population'] += int(row[key])
-
-    return list(age.values())
+    return res
 
 def show_map(census, year):
     """
@@ -117,29 +121,41 @@ def show_bar(census):
 
     return bars
 
-def show_scatter(census, state_name):
+def state_name(data, state):
+
+    for row in data:
+        if row['STATE'] == state:
+            return row['NAME']
+
+    return None
+
+def show_scatter(data, state, year):
     """
     Create a scatter plot that shows the age group of the specific state
     """
     import altair as alt
 
-    source = alt.Data(values=census)
+    source = alt.Data(values=filter_state(year, state, data))
 
     brush = alt.selection_interval(encodings=['x'])
 
-    scatter = alt.Chart().mark_point().encode(
-        alt.X('Age:Q'),
-        alt.Y('Population:Q'),
+    scatter = alt.Chart(source).mark_point().encode(
+        x='Age:Q',
+        y='Population:Q',
+        tooltip=['Age:Q', 'Population:Q'],
         color=alt.condition(brush, 'Age:N', alt.value('lightgray'), legend=None)
+    ).transform_aggregate(
+        Population='sum(Population)',
+        groupby=['Age']
     ).properties(
         width=500,
         height=500,
-        title='Scatter Plot of {}'.format(state_name)
+        title='Scatter Plot of {}'.format(state_name(data, state))
     ).add_selection(
         brush
     )
 
-    bars = alt.Chart().mark_bar().encode(
+    age_bars = alt.Chart(source).mark_bar().encode(
         x='Population:Q',
         y=alt.Y(
             'Age:N',
@@ -152,8 +168,11 @@ def show_scatter(census, state_name):
         tooltip=['Population:Q']
     ).properties(
         title='Top 50 Within Highlighted Range',
-        width=500,
+        width=300,
         height=500
+    ).transform_aggregate(
+        Population='sum(Population)',
+        groupby=['Age']
     ).transform_filter(
         brush
     ).transform_window(
@@ -161,4 +180,19 @@ def show_scatter(census, state_name):
         sort=[{'field': 'Population', 'order': 'descending'}]
     ).transform_filter('datum.rank <= 50')
 
-    return alt.hconcat(scatter, bars, data=source)
+    gender_bars = alt.Chart(source).mark_bar().encode(
+        x='Gender:N',
+        y='Population:Q',
+        tooltip=['Population:Q', 'Gender:N']
+    ).transform_filter(
+        brush
+    ).transform_aggregate(
+        Population='sum(Population)',
+        groupby=['Gender']
+    ).properties(
+        title='Age Group by Gender',
+        width=200,
+        height=500
+    )
+
+    return alt.hconcat(scatter, age_bars, gender_bars)

@@ -67,7 +67,7 @@ class App extends Component {
       .vegaEmbed("#map", spec)
       .then(result => {
         const view = result.view;
-        view.addEventListener("click", function(event, item) {
+        view.addEventListener("click", function(_, item) {
           handleClick(item);
         });
       })

@@ -35,21 +35,13 @@ def us_map(year):
         }
     )
 
-def state_name(data, state):
-
-    for row in data:
-        if row['STATE'] == state:
-            return row['NAME']
-
-    return None
-
 @app.route('/api/bar/<year>/<state>')
 def scatter_plot(year, state):
     """
     Return the altair json of STATE
     """
 
-    response = show_scatter(filter_state(year, state, data), state_name(data, state)).to_json()
+    response = show_scatter(data=data, year=2010, state=1).to_json()
 
     return Response(
         response,
