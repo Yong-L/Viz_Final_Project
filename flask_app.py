@@ -53,4 +53,4 @@ def scatter_plot(year, state):
     )
 
 if __name__ == '__main__':
-    app.run(port=8000)
+    app.run()
