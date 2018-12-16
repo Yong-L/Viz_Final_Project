@@ -17,7 +17,9 @@ class App extends Component {
     super(props);
     this.state = {
       year: 2010,
-      modal: false
+      modal: false,
+      state_pop: null,
+      state_name: null
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -41,16 +43,21 @@ class App extends Component {
 
   handleClick(item) {
     if (item.datum === undefined) {
-      this.clearChild()
+      this.clearChild();
       return;
     }
 
     const state = item.datum.id;
+    const state_pop = item.datum.Population;
+    const state_name = item.datum.Name;
+
     const spec = `/api/bar/${this.state.year}/${state}`;
 
     this.setState(
       {
-        modal: true
+        modal: true,
+        state_pop: state_pop,
+        state_name: state_name
       },
       () => {
         window.vegaEmbed("#charts", spec);
@@ -59,12 +66,15 @@ class App extends Component {
   }
 
   clearChild() {
+    this.setState({
+      state_pop: null,
+      state_name: null
+    });
     const node = document.getElementById("charts");
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
   handleSubmit(event) {
-
     this.clearChild();
 
     const spec = `/api/map/${this.state.year}`;
@@ -116,6 +126,12 @@ class App extends Component {
           </Nav>
         </Navbar>
         <div id="map" />
+        {this.state.state_pop != null ? (
+          <h6>
+            State Name: {this.state.state_name}
+            <br /> State Population: {this.state.state_pop}
+          </h6>
+        ) : null}
         <div id="charts" />
       </div>
     );
