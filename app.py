@@ -24,7 +24,12 @@ def us_map(year):
     """
     Return the map of US census
     """
-    response = show_map(population_by_year(year, data), 'US Census of {}'.format(year)).to_json()
+    response = ''
+
+    try:
+        response = show_map(population_by_year(year, data), 'US Census of {}'.format(year)).to_json()
+    except:
+        response = ''
 
     return Response(
         response,
@@ -40,8 +45,12 @@ def scatter_plot(year, state):
     """
     Return the altair json of STATE
     """
+    response = ''
 
-    response = show_scatter(data=data, year=year, state=state).to_json()
+    try:
+        response = show_scatter(data=data, year=year, state=state).to_json()
+    except:
+        response = ''
 
     return Response(
         response,

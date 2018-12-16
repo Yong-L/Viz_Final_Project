@@ -17,9 +17,7 @@ class App extends Component {
     super(props);
     this.state = {
       year: 2010,
-      modal: false,
-      state_pop: null,
-      state_name: null
+      modal: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -126,12 +124,6 @@ class App extends Component {
           </Nav>
         </Navbar>
         <div id="map" />
-        {this.state.state_pop != null ? (
-          <h6>
-            State Name: {this.state.state_name}
-            <br /> State Population: {this.state.state_pop}
-          </h6>
-        ) : null}
         <div id="charts" />
       </div>
     );
