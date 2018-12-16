@@ -58,7 +58,10 @@ class App extends Component {
         state_name: state_name
       },
       () => {
-        window.vegaEmbed("#charts", spec);
+        window.vegaEmbed("#charts", spec).then(() => {
+          const element = document.getElementById("charts");
+          element.scrollIntoView({ behavior: "smooth" });
+        });
       }
     );
   }
