@@ -41,7 +41,7 @@ def scatter_plot(year, state):
     Return the altair json of STATE
     """
 
-    response = show_scatter(data=data, year=2010, state=1).to_json()
+    response = show_scatter(data=data, year=year, state=state).to_json()
 
     return Response(
         response,
@@ -53,4 +53,4 @@ def scatter_plot(year, state):
     )
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)

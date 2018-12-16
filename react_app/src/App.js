@@ -24,6 +24,7 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.clearChild = this.clearChild.bind(this);
   }
 
   toggle() {
@@ -40,8 +41,7 @@ class App extends Component {
 
   handleClick(item) {
     if (item.datum === undefined) {
-      const node = document.getElementById("charts");
-      while (node.firstChild) node.removeChild(node.firstChild);
+      this.clearChild()
       return;
     }
 
@@ -58,7 +58,15 @@ class App extends Component {
     );
   }
 
+  clearChild() {
+    const node = document.getElementById("charts");
+    while (node.firstChild) node.removeChild(node.firstChild);
+  }
+
   handleSubmit(event) {
+
+    this.clearChild();
+
     const spec = `/api/map/${this.state.year}`;
 
     const handleClick = this.handleClick;
